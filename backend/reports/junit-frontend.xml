@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="16" failures="0" errors="0" time="1.079">
+    <testsuite name="src/components/ProductCard.test.tsx" timestamp="2026-09-30T14:55:13.027Z" hostname="hieu" tests="4" failures="0" errors="0" skipped="0" time="0.235432921">
+        <testcase classname="src/components/ProductCard.test.tsx" name="ProductCard &gt; render tên, brand, giá" time="0.037972203">
+        </testcase>
+        <testcase classname="src/components/ProductCard.test.tsx" name="ProductCard &gt; khi hết hàng mọi size → nút &apos;Thêm vào giỏ&apos; bị khoá" time="0.066141187">
+        </testcase>
+        <testcase classname="src/components/ProductCard.test.tsx" name="ProductCard &gt; click &apos;Thêm vào giỏ&apos; gọi onAdd với size mặc định còn hàng + qty 1" time="0.022956683">
+        </testcase>
+        <testcase classname="src/components/ProductCard.test.tsx" name="ProductCard &gt; người dùng đổi size → onAdd nhận size đã chọn; size hết hàng bị disable" time="0.107149696">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/hooks/use-cart.test.ts" timestamp="2026-09-30T14:55:13.028Z" hostname="hieu" tests="4" failures="0" errors="0" skipped="0" time="0.176094895">
+        <testcase classname="src/hooks/use-cart.test.ts" name="useCart &gt; tự tạo cart khi chưa có trong localStorage" time="0.064508702">
+        </testcase>
+        <testcase classname="src/hooks/use-cart.test.ts" name="useCart &gt; dùng lại cart đã lưu — không createCart" time="0.002020038">
+        </testcase>
+        <testcase classname="src/hooks/use-cart.test.ts" name="useCart &gt; cart token hết hạn (401) → clear + tự tạo cart mới" time="0.053462507">
+        </testcase>
+        <testcase classname="src/hooks/use-cart.test.ts" name="useCart &gt; addItem gọi đúng api với product/size/qty" time="0.055104141">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/hooks/use-session.test.ts" timestamp="2026-09-30T14:55:13.029Z" hostname="hieu" tests="4" failures="0" errors="0" skipped="0" time="0.017566285">
+        <testcase classname="src/hooks/use-session.test.ts" name="useSession &gt; tạo session_id mới và persist vào localStorage" time="0.010991648">
+        </testcase>
+        <testcase classname="src/hooks/use-session.test.ts" name="useSession &gt; reuse session_id đã lưu (giữ phiên tư vấn qua reload)" time="0.001244862">
+        </testcase>
+        <testcase classname="src/hooks/use-session.test.ts" name="useSession &gt; reset sinh id mới và ghi đè storage" time="0.002402072">
+        </testcase>
+        <testcase classname="src/hooks/use-session.test.ts" name="useAdminToken &gt; save lưu sessionStorage, clear xoá" time="0.001854861">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/utils.test.ts" timestamp="2026-09-30T14:55:13.030Z" hostname="hieu" tests="4" failures="0" errors="0" skipped="0" time="0.018186691">
+        <testcase classname="src/lib/utils.test.ts" name="formatVnd &gt; định dạng VND theo locale vi-VN, không thập phân" time="0.013039901">
+        </testcase>
+        <testcase classname="src/lib/utils.test.ts" name="formatVnd &gt; làm tròn số lẻ (product chỉ dùng int nhưng API có thể trả float)" time="0.000360594">
+        </testcase>
+        <testcase classname="src/lib/utils.test.ts" name="cn &gt; gộp class có điều kiện" time="0.003256727">
+        </testcase>
+        <testcase classname="src/lib/utils.test.ts" name="cn &gt; resolve xung đột tailwind (merge, không nối chuỗi)" time="0.000471992">
+        </testcase>
+    </testsuite>
+</testsuites>

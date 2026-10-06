@@ -1,0 +1,105 @@
+name: CI
+
+# Chạy mỗi push/PR: lint → unit + integration test (backend) → test + build (frontend).
+# System test (LLM thật) chỉ chạy ở main, có API key qua secret.
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+
+jobs:
+  backend:
+    name: Backend — lint + unit + integration
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Cài dependencies
+        run: pip install -r requirements.txt
+
+      - name: Ruff lint
+        run: ruff check .
+
+      - name: Unit + Integration tests (offline, không cần OpenRouter)
+        run: pytest -q --junitxml=reports/junit.xml
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-report
+          path: backend/reports/junit.xml
+
+  system-test:
+    name: Backend — system test (OpenRouter thật)
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'main' && github.event_name == 'push'
+    needs: backend
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Khởi tạo catalog (dataset + embeddings)
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          python scripts/generate_dataset.py
+          python scripts/build_embeddings.py
+
+      - name: System tests
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ADMIN_TOKEN: "${{ secrets.ADMIN_TOKEN || 'ci-admin-token' }}"
+        run: pytest tests/system -m system -q --junitxml=reports/junit-system.xml
+
+      - name: Upload system report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: system-test-report
+          path: backend/reports/junit-system.xml
+
+  frontend:
+    name: Frontend — typecheck + test + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Cài dependencies
+        run: npm ci
+
+      - name: Typecheck (tsc --noEmit)
+        run: npm run lint
+
+      - name: Vitest
+        run: npm test
+
+      - name: Production build
+        run: npm run build

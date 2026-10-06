@@ -1,0 +1,18 @@
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic==2.9.2
+pydantic-settings==2.7.0
+openai==1.55.0
+httpx==0.27.2
+numpy==2.1.3
+tenacity==9.0.0
+loguru==0.7.2
+python-multipart==0.0.17
+
+# local fallback cho embedding (nếu OpenRouter embedding model không khả dụng)
+# cài đặt lazy trong code, không bắt buộc cho dev bình thường
+# sentence-transformers==3.3.0
+
+pytest==8.3.3
+pytest-asyncio==0.24.0
+ruff==0.7.4

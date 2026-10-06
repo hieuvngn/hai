@@ -1,0 +1,13 @@
+# Ruff — gate chất lượng trong CI (ruff check . phải xanh)
+line-length = 120
+target-version = "py311"
+
+[lint]
+# Bỏ isort (I): một số file cố tình đặt import giữa file để phá circular
+# app.schemas ↔ app.data.storage — isort sẽ "sửa" thành crash.
+select = ["E4", "E7", "E9", "F", "W"]
+ignore = ["E731", "E741"]
+
+[lint.per-file-ignores]
+"tests/**" = ["E402"]
+"scripts/**" = ["E402"]

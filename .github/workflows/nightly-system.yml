@@ -1,0 +1,48 @@
+name: Nightly system test
+
+# Mỗi ngày 08:00 UTC: chạy 21 system test với OpenRouter thật, phát hiện sớm
+# model free bị đổi/gỡ khỏi catalog hoặc rate-limit chính sách mới.
+
+on:
+  schedule:
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+
+jobs:
+  system:
+    name: System tests (live LLM)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Cài dependencies
+        run: pip install -r requirements.txt
+
+      - name: Khởi tạo catalog
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          python scripts/generate_dataset.py
+          python scripts/build_embeddings.py
+
+      - name: System tests
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ADMIN_TOKEN: "${{ secrets.ADMIN_TOKEN || 'ci-admin-token' }}"
+        run: pytest tests/system -m system -v --junitxml=reports/junit-nightly.xml
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-system-report
+          path: backend/reports/junit-nightly.xml
